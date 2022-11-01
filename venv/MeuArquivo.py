@@ -2,7 +2,6 @@ import pandas as pd
 
 # Importar a base de dados
 tabela_vendas = pd.read_excel('Vendas.xlsx')
-print(tabela_vendas)
 
 # Visualizar a base de dados
 
