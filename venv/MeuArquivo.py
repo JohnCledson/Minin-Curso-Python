@@ -1,4 +1,5 @@
 import pandas as pd
+import win32com.client as win32
 
 # Importar a base de dados
 tabela_vendas = pd.read_excel('venv/Vendas.xlsx')
@@ -17,6 +18,34 @@ print(quantidade)
 
 # Ticket medio por produto em cada loja
 ticket_medio = (faturamento['Valor Final'] / quantidade['Quantidade']).to_frame()
+ticket_medio = ticket_medio.rename(columns={0: 'Ticket Médio'})
 print(ticket_medio)
 
 # Envia um email com o relatório
+outlook = win32.Dispatch('outlook.application')
+mail = outlook.CreateItem(0)
+mail.To = 'To address'
+mail.Subject = 'Message subject'
+mail.HTMLBody = f'''
+<p>Preados.</p>
+
+<p>Seque o Relatório de Vendas por cada Loja.</p>
+
+<p>Faturamento:</p>
+{faturamento.to_html(formatters={'Valor Final': 'R${:,.2f}'.format})}
+
+<p>Quantindade de Vendas:</p>
+{quantidade.to_html()}
+
+<p>Ticket Médio dos Produtos de cada Loja:</p>
+{ticket_medio.to_html(formatters={'Ticket Médio': 'R${:,.2f}'.format}))}
+
+<p>Qualquer Dúvida estou a dispossição!</p>
+
+<p>Att...</p>
+<p>John Cledson</p>
+'''
+
+mail.send()
+
+print('Email Enviado')
